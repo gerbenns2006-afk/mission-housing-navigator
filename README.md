@@ -16,7 +16,10 @@ Open [http://127.0.0.1:4173](http://127.0.0.1:4173). Stop the server with Ctrl+C
 
 ## Publish and share
 
-The intended source repository is **public GitHub**, with the live site hosted on **Vercel**. The final repository and production URLs will be supplied after deployment.
+- Live site: [mission-housing-navigator.vercel.app](https://mission-housing-navigator.vercel.app/)
+- Public source: [gerbenns2006-afk/mission-housing-navigator](https://github.com/gerbenns2006-afk/mission-housing-navigator)
+
+Vercel is connected to this repository. Updates pushed to `main` trigger production deployments.
 
 To deploy a copy, push this project folder to its own public GitHub repository, then import that repository in Vercel. Use **Other** as the framework. The included `vercel.json` runs `npm run build` for syntax validation and copies an allowlist of public files to `dist/`; only that directory is served. Keep credentials, private notes, student information, and local deployment state out of the repository.
 
