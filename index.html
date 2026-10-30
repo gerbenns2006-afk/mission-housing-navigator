@@ -10,15 +10,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;650;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./journey.css">
+  <link rel="stylesheet" href="./map.css">
 </head>
 <body>
   <a class="skip" href="#main">Skip to guide</a>
   <header class="desktop-bar"><a class="brand" href="#home"><img src="./assets/lion.svg" alt=""><span>MISSION <b>HOUSING NAVIGATOR</b></span></a><div class="bar-right"><span class="locale">SANTA CLARA, CA <span class="signal">●</span></span><button class="exit" id="quick-exit" title="Opens a neutral page. Does not erase browser history.">Quick exit ↗</button></div></header>
   <div class="desktop">
-    <aside class="shortcuts" aria-label="Desktop shortcuts"><button data-page="pathway"><span class="shortcut-icon coral" data-icon="compass"></span>Find my path</button><button data-page="directory"><span class="shortcut-icon yellow" data-icon="folder"></span>Resource<br>directory</button><button data-page="learn"><span class="shortcut-icon lavender" data-icon="book"></span>Housing<br>explained</button><button data-page="steps"><span class="shortcut-icon mint" data-icon="check"></span>My next<br>steps</button></aside>
+    <aside class="shortcuts" aria-label="Desktop shortcuts"><button data-page="pathway"><span class="shortcut-icon coral" data-icon="compass"></span>Find my path</button><button data-page="directory"><span class="shortcut-icon yellow" data-icon="folder"></span>Resource<br>directory</button><button data-page="map"><span class="shortcut-icon lavender" data-icon="pin"></span>Mission &<br>the city</button><button data-page="steps"><span class="shortcut-icon mint" data-icon="check"></span>My next<br>steps</button></aside>
     <main class="window" id="main" tabindex="-1">
       <div class="titlebar"><div class="window-title"><span data-icon="home"></span><span id="window-name">Welcome home / Start here</span></div><div class="window-tools"><button id="reset" title="Reset selections and saved steps" aria-label="Reset selections and saved steps">↺</button><button id="expand" title="Toggle wider view" aria-label="Toggle wider view">□</button></div></div>
-      <nav class="tabs" aria-label="Guide sections"><button data-page="home">Start here</button><button data-page="pathway">My pathway</button><button data-page="directory">Find support</button><button data-page="learn">Housing 101</button><button data-page="steps">My next steps <span id="step-count">0</span></button></nav>
+      <nav class="tabs" aria-label="Guide sections"><button data-page="home">Start here</button><button data-page="pathway">My pathway</button><button data-page="map">Mission & the city</button><button data-page="directory">Find support</button><button data-page="learn">Housing explained</button><button data-page="steps">My next steps <span id="step-count">0</span></button></nav>
       <div id="content"></div>
       <footer class="window-footer"><span><span class="status-dot"></span> Browse freely. No account needed.</span><a href="https://missioncollege.edu/student-services/basic-needs/index.html" target="_blank" rel="noopener noreferrer">I want help from someone at Mission ↗</a></footer>
     </main>

@@ -1,0 +1,73 @@
+import {mapLocations,campusMapUrl,campusPrintMapUrl,geocodeSource} from './data/map-locations.js';
+
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const link=(url,label,cls='')=>`<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`;
+const categoryNames={campus:'On campus',rent:'Rent & deposit offices',assessment:'Assessment routes'};
+let mapInstance=null,markerLayer=null,activeRoot=null,cleanupHandler=null,loadingPromise=null,mountSequence=0;
+const markers=new Map();
+
+export function mapMarkup({resourceIds=[]}={}){
+  const relatedPlaces=mapLocations.filter(p=>p.resourceIds.some(id=>resourceIds.includes(id)));
+  const hasRelated=relatedPlaces.length>0;
+  const contextNote=resourceIds.length?`<div class="notice map-context-note">${hasRelated?`<strong>${relatedPlaces.length} public ${relatedPlaces.length===1?'location connects':'locations connect'} to your pathway.</strong>We’ve opened those places first. Switch to “All public locations” to explore the wider network.`:'<strong>Your pathway includes phone, online, or other routes without a pin here.</strong>Start at Mission, or return to your pathway for those contacts. This map shows a selected set of public offices.'}</div>`:'';
+  return `<section class="page map-page"><div class="page-intro"><div class="eyebrow"><span class="tiny-dot"></span>MISSION & THE SOUTH BAY / EXPLORE YOUR SUPPORT</div><h1 class="subhead">See where your next step lives.</h1><p>Start at Mission, then explore public support offices across the South Bay. Pick a pin or a place in the list to see what to do before you go.</p></div>${contextNote}<div class="map-toolbar"><div class="map-modes" aria-label="Map view"><button type="button" class="map-mode active" data-map-view="campus" aria-pressed="true">⌂ Mission campus</button><button type="button" class="map-mode" data-map-view="network" aria-pressed="false">◎ South Bay network</button></div><div class="map-campus-links">${link(campusMapUrl,'Official campus map')}${link(campusPrintMapUrl,'Printable campus map')}</div></div><div class="map-workspace" id="housing-map-workspace"><aside class="map-locations-panel" aria-label="Public office locations"><div class="map-list-heading"><h2>Choose a place</h2><span>7 public locations</span></div><label class="map-filter-label" for="map-filter">Show locations</label><select id="map-filter"><option value="all">All public locations</option><option value="campus">Mission campus</option><option value="rent">Rent & deposit offices</option><option value="assessment">Assessment routes</option>${hasRelated?'<option value="related">Places from my pathway</option>':''}</select><div id="map-location-list" class="map-location-list"></div><p class="map-list-note">This is a selected set of public offices, not the full resource directory. A pin does not mean walk-in help or housing is available.</p><button type="button" class="text-button" data-page="directory">Explore all resources →</button></aside><div class="map-main"><div class="map-canvas-wrap"><div id="housing-city-map" class="housing-city-map" role="region" aria-label="Interactive map of Mission College and South Bay public support offices" tabindex="0"></div><div id="map-loading" class="map-loading"><span class="map-loading-dot"></span>Opening your corner of the Bay…</div><div class="map-floating-label"><span class="status-dot"></span> Public offices · call first</div></div><div id="map-selected" class="map-selected" aria-live="polite"></div></div></div><div id="map-status" class="map-status" role="status">The map loads from OpenStreetMap. Your location is not requested.</div><div class="map-bottom-note"><p><strong>Start inside Campus Center.</strong> Mission Basic Needs is on the first floor. The map pin marks the campus street address; use the official campus map to find the building and entrance.</p><div class="map-source-links">${link('https://www.openstreetmap.org/copyright','© OpenStreetMap contributors')}${link(geocodeSource,'Address geocoding: US Census')}${link('https://www.openstreetmap.org/fixthemap','Report a map issue')}</div><p>Address points are approximate, not entrances or travel routes. Only public offices are mapped; confidential shelters are not shown. Street maps are supplied by OpenStreetMap, which receives normal map requests. No age, household, or pathway answers are sent to the map service.</p></div></section>`;
+}
+
+async function loadLeaflet(){
+  if(window.L)return window.L;
+  if(loadingPromise)return loadingPromise;
+  loadingPromise=new Promise((resolve,reject)=>{
+    if(!document.querySelector('link[data-leaflet-style]')){const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('./vendor/leaflet/leaflet.css',import.meta.url).href;css.dataset.leafletStyle='true';document.head.append(css);}
+    const script=document.createElement('script');script.src=new URL('./vendor/leaflet/leaflet.js',import.meta.url).href;script.dataset.leafletScript='true';
+    script.onload=()=>{if(window.L)resolve(window.L);else{script.remove();loadingPromise=null;reject(new Error('Map library did not initialize'));}};
+    script.onerror=()=>{script.remove();loadingPromise=null;reject(new Error('Map library unavailable'));};document.head.append(script);
+  });
+  return loadingPromise;
+}
+
+export async function mountMap({onResource=()=>{},onSave=()=>{},isSaved=()=>false,resourceIds=[]}={}){
+  cleanupMap();
+  const sequence=mountSequence;
+  const root=document.querySelector('#housing-map-workspace');if(!root)return;
+  activeRoot=root;
+  const related=new Set(resourceIds);
+  const relatedPlaces=mapLocations.filter(p=>p.resourceIds.some(id=>related.has(id)));
+  const firstRelated=resourceIds.map(id=>relatedPlaces.find(p=>p.resourceIds.includes(id))).find(Boolean);
+  const savedHere=new Set();
+  const isActive=()=>sequence===mountSequence&&root.isConnected;
+  const saved=id=>savedHere.has(id)||isSaved(id);
+  let selectedId=firstRelated?.id||'mission',filter=firstRelated?'related':'all',view=firstRelated?'network':'campus';
+  const listRoot=root.querySelector('#map-location-list');
+  const detailRoot=root.querySelector('#map-selected');
+  const status=document.querySelector('#map-status');
+  const loading=root.querySelector('#map-loading');
+  const visible=()=>mapLocations.filter(p=>filter==='all'||p.category===filter||(filter==='related'&&p.resourceIds.some(id=>related.has(id))));
+  const isRelated=p=>p.resourceIds.some(id=>related.has(id));
+  const chosenResource=p=>p.resourceIds.find(id=>related.has(id))||p.resourceId;
+  function listMarkup(){return visible().map(p=>`<button type="button" class="map-location ${selectedId===p.id?'selected':''}" data-map-location="${p.id}" aria-pressed="${selectedId===p.id}"><span class="map-place-number ${p.category}">${p.number}</span><span><strong>${esc(p.shortName)}</strong><small>${esc(categoryNames[p.category])}${isRelated(p)?' · Your pathway':''}</small></span><span class="map-place-arrow" aria-hidden="true">↗</span></button>`).join('')||'<p class="small">No public-office pins match this pathway. Your recommended phone and online resources are still available in your plan and the full directory.</p>';}
+  function renderSelected(){const p=mapLocations.find(x=>x.id===selectedId);if(!p)return;detailRoot.innerHTML=`<div class="map-selected-title"><span class="map-place-number ${p.category}">${p.number}</span><div><span class="eyebrow">${esc(categoryNames[p.category])}${isRelated(p)?' / FROM YOUR PATHWAY':''}</span><h2>${esc(p.name)}</h2></div></div><p class="map-address">${esc(p.address)}</p><span class="map-location-type">${esc(p.type)}</span><p class="map-call-first">${esc(p.note)}</p><div class="map-selected-actions"><button type="button" class="button" data-map-detail="${chosenResource(p)}">Intake details & contact →</button><button type="button" class="button secondary" data-map-save="${chosenResource(p)}" ${saved(chosenResource(p))?'disabled':''}>${saved(chosenResource(p))?'✓ In My Next Steps':'+ My next steps'}</button>${link('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address),'Directions to public address','text-button')}</div><div class="map-selected-source">${link(p.source,'Official location / program source')}${p.id==='mission'?link(campusMapUrl,'Find Campus Center on the official map'):''}</div>`;}
+  function updatePins(){for(const [id,marker] of markers){const p=mapLocations.find(x=>x.id===id);if(visible().includes(p)){if(!markerLayer.hasLayer(marker))markerLayer.addLayer(marker);}else markerLayer.removeLayer(marker);const el=marker.getElement();if(el){el.classList.toggle('map-pin-selected',id===selectedId);el.classList.toggle('map-pin-related',isRelated(p));el.setAttribute('aria-pressed',String(id===selectedId));el.setAttribute('aria-label',p.name);}}}
+  function select(id,move=true){const p=mapLocations.find(x=>x.id===id);if(!p)return;selectedId=id;view=id==='mission'?'campus':'network';document.querySelectorAll('[data-map-view]').forEach(b=>{b.classList.toggle('active',b.dataset.mapView===view);b.setAttribute('aria-pressed',String(b.dataset.mapView===view));});listRoot.innerHTML=listMarkup();renderSelected();if(mapInstance&&move)mapInstance.flyTo([p.lat,p.lng],p.id==='mission'?16:15,{animate:!window.matchMedia('(prefers-reduced-motion: reduce)').matches,duration:.7});updatePins();}
+  function setView(next){view=next;document.querySelectorAll('[data-map-view]').forEach(b=>{b.classList.toggle('active',b.dataset.mapView===view);b.setAttribute('aria-pressed',String(b.dataset.mapView===view));});if(view==='campus'){filter='all';root.querySelector('#map-filter').value='all';select('mission');}else if(mapInstance){const locations=visible();if(locations.length)mapInstance.fitBounds(locations.map(p=>[p.lat,p.lng]),{padding:[42,42],maxZoom:13,animate:!window.matchMedia('(prefers-reduced-motion: reduce)').matches});}}
+  function click(event){const button=event.target.closest('button');if(!button)return;if(button.dataset.mapLocation){select(button.dataset.mapLocation);const fresh=root.querySelector(`[data-map-location="${button.dataset.mapLocation}"]`);fresh?.focus({preventScroll:true});}if(button.dataset.mapView)setView(button.dataset.mapView);if(button.dataset.mapDetail)onResource(button.dataset.mapDetail);if(button.dataset.mapSave){const id=button.dataset.mapSave;onSave(id);savedHere.add(id);if(isActive()){button.textContent='✓ In My Next Steps';button.disabled=true;}}}
+  function change(event){if(event.target.id!=='map-filter')return;filter=event.target.value;const places=visible();if(!places.some(p=>p.id===selectedId)&&places[0])selectedId=places[0].id;listRoot.innerHTML=listMarkup();renderSelected();if(mapInstance){updatePins();if(places.length)mapInstance.fitBounds(places.map(p=>[p.lat,p.lng]),{padding:[40,40],maxZoom:filter==='campus'?16:13});}view=filter==='campus'?'campus':'network';document.querySelectorAll('[data-map-view]').forEach(b=>{b.classList.toggle('active',b.dataset.mapView===view);b.setAttribute('aria-pressed',String(b.dataset.mapView===view));});}
+  const page=root.closest('.map-page');page.addEventListener('click',click);page.addEventListener('change',change);cleanupHandler=()=>{page.removeEventListener('click',click);page.removeEventListener('change',change);};
+  if(firstRelated&&!root.querySelector('#map-filter option[value="related"]')){const option=document.createElement('option');option.value='related';option.textContent='Places from my pathway';root.querySelector('#map-filter').append(option);}
+  root.querySelector('#map-filter').value=filter;
+  document.querySelectorAll('[data-map-view]').forEach(b=>{b.classList.toggle('active',b.dataset.mapView===view);b.setAttribute('aria-pressed',String(b.dataset.mapView===view));});
+  listRoot.innerHTML=listMarkup();renderSelected();
+  try{
+    const L=await loadLeaflet();if(sequence!==mountSequence||!root.isConnected)return;
+    mapInstance=L.map(root.querySelector('#housing-city-map'),{scrollWheelZoom:false,zoomControl:true,minZoom:9,maxZoom:18}).setView([37.391221418477,-121.978484294125],15);
+    const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>',referrerPolicy:'strict-origin-when-cross-origin',keepBuffer:1});
+    let loaded=false;
+    tiles.on('tileload',()=>{if(!isActive())return;loaded=true;loading.hidden=true;status.textContent='Drag to explore. Use + / − or double-click to zoom. Pick a numbered pin or a place from the list.';});
+    tiles.on('tileerror',()=>{if(!isActive())return;if(!loaded){loading.hidden=true;status.textContent='The street map is temporarily unavailable. You can still use every location in the list, open its details, and get directions.';}});
+    tiles.addTo(mapInstance);markerLayer=L.layerGroup().addTo(mapInstance);
+    for(const p of mapLocations){const pin=L.divIcon({className:`housing-map-pin ${p.category}`,html:`<span>${p.id==='mission'?'<img src="./assets/lion.svg" alt="">':p.number}</span>`,iconSize:p.id==='mission'?[44,50]:[32,40],iconAnchor:p.id==='mission'?[22,46]:[16,38]});const marker=L.marker([p.lat,p.lng],{icon:pin,title:p.name,alt:p.name,keyboard:true,riseOnHover:true}).bindTooltip(esc(p.shortName),{direction:'top',offset:[0,-34]});marker.on('click',()=>select(p.id,false));markerLayer.addLayer(marker);markers.set(p.id,marker);}
+    mapInstance.on('focus',()=>{if(!isActive())return;status.textContent='Map keyboard controls: arrow keys pan; + and − zoom. Tab reaches pins. The location list provides the same choices.';});
+    mapInstance.invalidateSize();updatePins();if(view==='network')setView('network');else if(selectedId!=='mission')select(selectedId);loading.hidden=true;
+  }catch(error){if(!isActive())return;if(mapInstance){mapInstance.remove();mapInstance=null;}markerLayer=null;markers.clear();loading.hidden=true;status.textContent='The interactive map could not load. The public-office list, intake details, and directions remain available.';root.querySelector('#housing-city-map').innerHTML='<div class="map-unavailable"><span>⌖</span><strong>Your support network is still here.</strong><p>Choose a public office from the list to get its contact details and directions.</p></div>';}
+}
+
+export function cleanupMap(){mountSequence++;if(cleanupHandler){cleanupHandler();cleanupHandler=null;}if(mapInstance){mapInstance.remove();mapInstance=null;}markers.clear();markerLayer=null;activeRoot=null;}

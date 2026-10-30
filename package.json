@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "node server.mjs", "check": "node --check app.js && node --check data/hps.js && node --check data/assessments.js && node --check data/resources.js", "build": "npm run check && node build.mjs" },
+  "scripts": { "dev": "node server.mjs", "check": "node --check app.js && node --check journey-ui.js && node --check data/journey.js && node --check map.js && node --check data/hps.js && node --check data/assessments.js && node --check data/resources.js", "build": "npm run check && node build.mjs" },
   "description": "An independent housing resource navigator for Mission College students."
 }
