@@ -31,7 +31,7 @@ The Mission & the City map shows seven public office locations using vendored Le
 
 ## Content and updates
 
-- `index.html`, `style.css`, and `app.js` provide the interface and interactions.
+- `index.html`, `style.css`, `polish.css`, and `app.js` provide the interface and interactions.
 - `journey-ui.js`, `journey.css`, and `data/journey.js` provide the short branching pathway.
 - `map.js`, `map.css`, and `data/map-locations.js` provide the map and public office list.
 - `vendor/leaflet/` contains Leaflet 1.9.4 and its license.
@@ -49,3 +49,7 @@ Use accurate link labels: a contact page is not an application. Never imply that
 The guide’s own JavaScript keeps selections and saved steps in memory for the current page session; it does not persist or transmit them. Do not add names, diagnoses, documents, or personal histories to this public project. The hosting provider and external services may log requests. The page loads fonts from Google. Opening the map requests public street tiles from OpenStreetMap; pathway answers are not sent, and geolocation is not requested. Agency and directions links take the visitor to those services’ separate privacy practices.
 
 **Quick exit does not clear browser history**, downloads, or other device records. Any copied, printed, or downloaded next-step list remains wherever the visitor saves it. Use a safer device if someone monitors your browsing. Contact links and source dates help students verify the next step directly; this guide cannot monitor emergencies or submit an application for them.
+
+## Artwork
+
+The official teal-and-orange Monarchs artwork in `assets/mission-monarch.png` is from [Mission College’s identity announcement](https://missioncollege.edu/news/mission-athletics-logo-unveil.html) ([original image](https://missioncollege.edu/news/images/mascot-two.png)). The source image is unmodified; CSS frames the lion in small guide badges. The mark belongs to Mission College. This independent guide does not imply college endorsement. Other map illustrations are project artwork.

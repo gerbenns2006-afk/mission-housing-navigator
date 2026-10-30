@@ -327,7 +327,21 @@ export function getJourneyOutcome(answers = {}) {
   if (minor) {
     why.push('You selected under 18. Adult applications and assessment routes are not automatically appropriate; ask Mission for an age-appropriate connection.');
     if (path === 'affordable') {
-      steps[0] = { title: 'Ask Mission about an age-appropriate application route', body: 'SCCHA applicants must be 18 or older. Ask campus support how your housing goals can be addressed now and which provider can explain household or applicant rules.', resourceIds: ['mission'] };
+      if (a.housingGoal === 'independent') {
+        steps[0] = {
+          title: a.moveStage === 'signed' ? 'Ask Mission to help with your next move-in step' : a.moveStage === 'found' ? 'Check your rental options before committing' : 'Plan your rental search with Mission',
+          body: `You selected under 18 and are finding a rental yourself. Ask Mission to help check applicant, lease, and deposit-program requirements for your age. ${steps[0].body}`,
+          resourceIds: ['mission']
+        };
+      } else if (a.housingGoal === 'property') {
+        steps[0] = {
+          title: a.housingProgress === 'waiting' ? 'Ask Mission to help check your property application' : a.housingProgress === 'access' ? 'Get help with an accessible property application' : 'Explore property application rules with Mission',
+          body: `You selected under 18 and want an affordable property. Ask Mission to help you check that property's applicant and household rules. ${steps[0].body}`,
+          resourceIds: ['mission', 'midpen']
+        };
+      } else {
+        steps[0] = { title: 'Ask Mission about an age-appropriate application route', body: 'SCCHA applicants must be 18 or older. Ask campus support how your housing goals can be addressed now and which provider can explain household or applicant rules. Property applications have their own rules and are separate from the voucher route.', resourceIds: ['mission'] };
+      }
     }
   }
   if (family) {
