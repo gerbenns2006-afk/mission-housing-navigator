@@ -240,6 +240,36 @@ dialog::backdrop { background: #123d3d66; backdrop-filter: blur(4px); }
 #dialog-content h3 { font: 600 14px var(--body); margin-top: 25px; }
 #dialog-content p,#dialog-content li { font-size: 14px; line-height: 1.75; }
 .detail-facts { gap: 13px; font-size: 13px; line-height: 1.6; }
+.about-page { max-width: 1060px; margin: auto; }
+.about-page .page-intro { max-width: 800px; margin-bottom: 40px; }
+.about-layout { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(250px,1fr); gap: 60px; align-items: start; }
+.creator-story .eyebrow { margin-bottom: 14px; font-size: 9px; }
+.creator-story h2 { font-size: 31px; margin-bottom: 23px; }
+.creator-story p { font-size: 15px; line-height: 1.85; color: var(--muted); margin-bottom: 20px; }
+.creator-story .story-purpose { color: var(--ink); border-left: 2px solid #91b4a2; padding-left: 20px; margin: 25px 0 0; }
+.about-use { border-top: 2px solid var(--teal); background: #eff4ed; padding: 24px; }
+.about-use h2 { font-size: 24px; margin-bottom: 13px; }
+.about-use>button { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; text-align: left; border-bottom: 1px solid #d4dfd3; background: none; padding: 17px 0; font-size: 13px; font-weight: 600; }
+.about-use>button:hover { color: var(--teal); }
+.about-use small { display: block; color: var(--muted); font-size: 12px; line-height: 1.65; font-weight: 400; margin-top: 6px; }
+.about-use>p { font-size: 11px; line-height: 1.7; color: var(--muted); margin: 19px 0 0; }
+.about-scope { max-width: 820px; font-size: 11px; line-height: 1.75; color: var(--muted); margin: 32px 0 27px; }
+.about-details summary { font-size: 15px; padding-block: 19px; }
+.about-details summary::after { top: 15px; }
+.about-details .learn-body { font-size: 13px; }
+@media(max-width:800px) {
+  .about-layout { gap: 30px; grid-template-columns: minmax(0,1.45fr) minmax(230px,1fr); }
+  .about-use { padding: 21px; }
+  .creator-story p { font-size: 14px; }
+}
+@media(max-width:650px) {
+  .about-layout { grid-template-columns: 1fr; gap: 30px; }
+  .about-page .page-intro { margin-bottom: 30px; }
+  .creator-story h2 { font-size: 29px; margin-bottom: 18px; }
+  .about-use h2 { font-size: 24px; }
+  .about-scope { margin-top: 24px; }
+  .about-details summary { font-size: 14px; }
+}
 #toast { bottom: 25px; border-radius: 5px; box-shadow: 0 4px 15px #163c2220; font-family: var(--body); }
 body.wide .desktop { max-width: 1500px; padding: 0 28px 36px; }
 body.wide .window { max-width: none; }
