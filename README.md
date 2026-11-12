@@ -27,12 +27,17 @@ To deploy a copy, push this project folder to its own public GitHub repository, 
 
 The main pathway uses 3–4 branching choices. Each answer changes the next question, Monarch reply, and three suggested actions. Age, household, and other support needs are optional refinements on the result. Housing Explained remains a separate topic library.
 
+My Next Steps includes per-contact follow-up choices and preparation checklists based on that contact’s published guidance. Students can mark preparation complete or ask about a missing item. Progress stays in page memory, appears in copied/downloaded/printed plans, and clears on refresh, reset, quick exit, or removal of that contact. These are personal planning choices, not agency application statuses.
+
 The Mission & the City map shows seven public office locations using vendored Leaflet and OpenStreetMap tiles. Coordinates are approximate US Census address geocodes, not entrances. Links to the official campus map identify campus buildings. A selected pathway highlights matching public offices; phone-only and online routes stay available in the directory.
 
 ## Content and updates
 
+Each listing displays its own recorded review date. Public corrections use the repository’s structured GitHub issue form; only public listing information is prefilled, and sign-in is required to submit. See [MAINTENANCE.md](MAINTENANCE.md) for the manual review and correction workflow. Reports do not automatically change the directory or update review dates.
+
 - `index.html`, `style.css`, `polish.css`, and `app.js` provide the interface and interactions.
 - `journey-ui.js`, `journey.css`, and `data/journey.js` provide the short branching pathway.
+- `plan-support.js` and `plan-support.css` provide contact follow-up and preparation tools; `resource-review.js` provides review dates and public correction links.
 - `map.js`, `map.css`, and `data/map-locations.js` provide the map and public office list.
 - `vendor/leaflet/` contains Leaflet 1.9.4 and its license.
 - `assets/` contains the illustrations and icons.

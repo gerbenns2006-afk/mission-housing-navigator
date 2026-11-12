@@ -1,0 +1,60 @@
+name: Correct a housing resource
+description: Report an outdated contact, broken link, or incorrect public listing detail.
+title: 'Listing correction: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This report will be **public**. This form reaches the website maintainer, not a housing provider, and does not request housing assistance.
+
+        Share public listing information only. Do not include names of people seeking help, phone numbers belonging to students, housing circumstances, case numbers, identification, medical information, screenshots of records, or documents. Use the provider's intake route for personal support.
+  - type: input
+    id: resource
+    attributes:
+      label: Resource name and listing ID
+      description: The listing this report concerns.
+      placeholder: Mission College Basic Needs (mission)
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Current official website
+      description: The public provider or government source linked by the guide.
+    validations:
+      required: false
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What needs checking?
+      options:
+        - Phone, email, or address
+        - Broken or changed link
+        - Intake instructions or hours
+        - Program rules or service area
+        - Source review date
+        - Another public listing detail
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Public detail to correct
+      description: Describe the listing detail and, if known, the correct wording. Leave out personal experiences or circumstances that identify anyone.
+      placeholder: The provider's public contact page now lists a different intake number.
+    validations:
+      required: true
+  - type: input
+    id: evidence
+    attributes:
+      label: Official source supporting the change
+      description: A public provider or government webpage URL, if available. Do not attach personal documents.
+    validations:
+      required: false
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Before submitting
+      options:
+        - label: I understand this report is public and have included only public listing information.
+          required: true

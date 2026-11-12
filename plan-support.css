@@ -1,0 +1,53 @@
+.plan-support { margin-top: 23px; border-block: 1px solid var(--line,#dce3df); }
+.plan-support details + details { border-top: 1px solid var(--line,#dce3df); }
+.plan-support summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 17px 0; cursor: pointer; font-weight: 600; font-size: 14px; list-style: none; }
+.plan-support summary::-webkit-details-marker { display: none; }
+.plan-support summary::after { content: '+'; color: var(--teal,#086575); font-size: 19px; font-weight: 400; }
+.plan-support details[open] > summary::after { content: '−'; }
+.plan-support summary > span:first-child { flex: 1; }
+.plan-support-count { color: var(--muted,#5f706f); font-size: 11px; font-weight: 400; text-align: right; }
+.plan-support-body { padding: 0 0 19px; }
+.plan-support .plan-support-hint { margin: 0 0 13px; font-size: 12px; line-height: 1.6; color: var(--muted,#5f706f); }
+.contact-status-label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; }
+.plan-support select { width: min(100%,370px); min-height: 44px; padding: 10px 35px 10px 12px; font: inherit; font-size: 13px; color: var(--ink,#152e31); background: #fff; border: 1px solid #aabbb7; border-radius: 4px; }
+.plan-support [data-contact-advice] { margin-top: 14px; }
+.contact-advice { background: #f1f6f3; border-left: 2px solid var(--teal,#086575); padding: 17px 18px; border-radius: 0 5px 5px 0; }
+.plan-support .contact-advice h4 { margin: 0 0 8px; font-size: 14px; font-weight: 650; line-height: 1.5; }
+.plan-support .contact-advice p { margin: 8px 0; font-size: 13px; line-height: 1.65; }
+.contact-question strong { display: block; font-size: 11px; margin: 12px 0 4px; }
+.plan-support .contact-alternative { border-top: 1px solid var(--line,#dce3df); padding-top: 12px; margin-top: 14px; }
+.contact-advice-actions { display: flex; flex-wrap: wrap; gap: 7px 19px; margin-top: 12px; }
+.contact-advice-actions .text-button { min-height: 36px; font-size: 12px; text-align: left; }
+.preparation-list { margin: 0; padding: 0; list-style: none; }
+.preparation-list > li { padding: 13px 0; border-top: 1px solid #e5ebe7; }
+.preparation-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.preparation-item > label { display: flex; align-items: flex-start; gap: 10px; flex: 1; min-width: 0; cursor: pointer; font-size: 13px; line-height: 1.6; }
+.preparation-item input { flex: 0 0 auto; width: 17px; height: 17px; margin: 3px 0; accent-color: var(--teal,#086575); }
+.prep-help-button { flex-shrink: 0; border: 1px solid #b9c9c3; border-radius: 4px; background: #fff; padding: 8px 10px; min-height: 36px; color: var(--teal,#086575); font: inherit; font-size: 11px; cursor: pointer; }
+.prep-help-button[aria-pressed="true"] { background: #edf4ef; border-color: var(--teal,#086575); }
+.preparation-question { margin: 12px 0 0 27px; padding: 13px 15px; border-left: 2px solid #9aafa7; background: #f6f8f5; font-size: 12px; line-height: 1.65; }
+.preparation-question[hidden] { display: none; }
+.preparation-question strong { font-size: 11px; }
+.plan-support .preparation-question p { margin: 5px 0; font-size: 13px; }
+.preparation-question > span { font-size: 11px; color: var(--muted,#5f706f); }
+.plan-support .preparation-privacy { margin: 12px 0 0; }
+.plan-support :is(summary,select,button,input):focus-visible { outline: 3px solid var(--teal,#086575); outline-offset: 3px; }
+@media(max-width:600px) {
+  .plan-support summary { flex-wrap: wrap; gap: 3px 10px; font-size: 13px; }
+  .plan-support summary > span:first-child { flex-basis: calc(100% - 30px); }
+  .plan-support summary::after { order: 1; }
+  .plan-support summary > span:first-child { order: 0; }
+  .plan-support-count { order: 2; flex-basis: 100%; text-align: left; }
+  .preparation-item { flex-direction: column; gap: 8px; }
+  .prep-help-button { margin-left: 27px; min-height: 40px; }
+  .contact-advice { padding: 14px; }
+}
+@media print {
+  .plan-support { margin-top: 12px; }
+  .plan-support details::details-content { content-visibility: visible!important; display: block!important; }
+  .plan-support details > .plan-support-body { display: block!important; }
+  .plan-support summary::after,.plan-support select,.contact-status-label,.contact-advice-actions,.prep-help-button,.preparation-privacy { display: none!important; }
+  .plan-support summary { padding: 10px 0; }
+  .plan-support details,.contact-advice,.preparation-list > li { break-inside: avoid; }
+  .contact-advice,.preparation-question { background: #fff; }
+}

@@ -418,3 +418,28 @@ body.wide .window { max-width: none; }
   .window { display: block; min-height: 0; max-width: none; border: 0; box-shadow: none; }
   .monarch-mark { display: none; }
 }
+
+/* Saved plans stay compact; students open the part they need. */
+.plan-contact-links { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 15px; font-size: 12px; }
+.plan-contact-links svg { width: 14px; height: 14px; margin-right: 4px; }
+.plan-contact-details { border-bottom: 1px solid var(--line); }
+.plan-contact-details > summary { padding: 16px 0; cursor: pointer; font-size: 13px; font-weight: 600; }
+.plan-contact-details > div { padding: 0 0 8px; }
+.plan-contact-details p { margin-bottom: 10px; }
+.plan-general { margin-block: 24px; border-top: 1px solid var(--line); }
+.plan-card > .resource-actions { margin-top: 16px; }
+.resource-review { border-top: 1px solid var(--line); margin-top: 17px; padding-top: 12px; }
+.resource-review .small { font-size: 11px; line-height: 1.65; margin: 0; }
+.resource-review .small strong { font-weight: 500; }
+.resource-correction { margin-top: 8px; }
+.resource-correction > summary { cursor: pointer; font-size: 11px; color: var(--teal); padding: 6px 0; }
+.resource-correction .small { max-width: 480px; margin: 5px 0 9px; }
+.resource-correction .text-button { font-size: 11px; }
+.sources .resource-review { border: 0; margin-top: 4px; padding-top: 4px; }
+.plan-contact-details > summary:focus-visible,.resource-correction > summary:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+@media print {
+  .resource-correction { display: none!important; }
+  .plan-card { break-inside: auto; }
+  .plan-card h3,.plan-card .eyebrow { break-after: avoid; }
+  .plan-contact-details > div { display: block; }
+}
